@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Skyglass — Weather Intelligence</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+<div class="app">
+
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <span class="brand__name">Skyglass</span>
+      <span class="brand__sub">Weather Intelligence</span>
+    </div>
+    <div class="header-meta">
+      <div id="clock" class="header-meta__clock">--:--:--</div>
+      <div>Powered by WeatherAI</div>
+    </div>
+  </header>
+
+  <!-- Search -->
+  <div class="search-row">
+    <input
+      id="search-input"
+      class="search-row__input"
+      type="text"
+      placeholder="Search city — e.g. Nairobi, London, Tokyo…"
+    />
+    <button class="btn btn--primary" onclick="searchCity()">Search</button>
+    <button class="btn btn--ghost"   onclick="autoLocate()">📍 Auto</button>
+  </div>
+
+  <!-- Error banner -->
+  <div id="error-banner" class="error-banner"></div>
+
+  <!-- Loading state -->
+  <div id="loading" class="loading">
+    <div class="loading__spinner"></div>
+    <p id="loading-msg" class="loading__text">Detecting your location…</p>
+  </div>
+
+  <!-- Weather data — hidden until loaded -->
+  <div id="data-view">
+
+    <!-- Current conditions -->
+    <div class="hero fade" style="animation-delay: 0s">
+      <div class="hero__top">
+        <div>
+          <div class="hero__location-tag">Current Weather</div>
+          <div id="hero-city"      class="hero__city">—</div>
+          <div id="hero-region"    class="hero__region">—</div>
+        </div>
+        <div class="hero__temp-wrap">
+          <div id="hero-temp"      class="hero__temp">—<sup>°C</sup></div>
+          <div id="hero-condition" class="hero__condition">—</div>
+        </div>
+      </div>
+      <div class="hero__stats">
+        <div>
+          <div class="stat__label">Feels Like</div>
+          <div id="stat-feels"    class="stat__value">—</div>
+        </div>
+        <div>
+          <div class="stat__label">Humidity</div>
+          <div id="stat-humidity" class="stat__value">—</div>
+        </div>
+        <div>
+          <div class="stat__label">Wind</div>
+          <div id="stat-wind"     class="stat__value">—</div>
+        </div>
+        <div>
+          <div class="stat__label">Wind Gust</div>
+          <div id="stat-gust"     class="stat__value">—</div>
+        </div>
+        <div>
+          <div class="stat__label">UV Index</div>
+          <div id="stat-uv"       class="stat__value">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hourly forecast -->
+    <p class="section-label fade" style="animation-delay: 0.08s">Next 12 Hours</p>
+    <div id="hourly-strip" class="hourly-strip fade" style="animation-delay: 0.1s"></div>
+
+    <!-- 7-day forecast -->
+    <p class="section-label fade" style="animation-delay: 0.16s">7-Day Forecast</p>
+    <div id="forecast-grid" class="forecast-grid fade" style="animation-delay: 0.18s"></div>
+
+    <!-- Conditions detail -->
+    <p class="section-label fade" style="animation-delay: 0.24s">Conditions Detail</p>
+    <div id="detail-grid" class="detail-grid fade" style="animation-delay: 0.26s"></div>
+
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    Built with <a href="https://weather-ai.co" target="_blank">WeatherAI API</a>
+    &nbsp;·&nbsp; <span id="last-updated"></span>
+  </footer>
+
+</div>
+
+<!-- Scripts — order matters: utilities first, then UI, then app logic -->
+<script src="js/weather.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

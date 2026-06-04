@@ -1,0 +1,584 @@
+/* ============================================================
+   Skyglass — Main Stylesheet
+   Structure:
+     1. CSS Variables (design tokens)
+     2. Reset & Base
+     3. Background
+     4. Layout
+     5. Header
+     6. Search
+     7. States (loading, error)
+     8. Hero card
+     9. Hourly strip
+    10. 7-day forecast
+    11. Conditions detail
+    12. Footer
+    13. Responsive breakpoints
+   ============================================================ */
+
+
+/* ── 1. Design tokens ───────────────────────────────────────── */
+:root {
+  --color-bg:           #080c18;
+  --color-panel:        rgba(255, 255, 255, 0.038);
+  --color-panel-hover:  rgba(255, 255, 255, 0.06);
+  --color-border:       rgba(255, 255, 255, 0.07);
+  --color-border-hi:    rgba(255, 255, 255, 0.14);
+  --color-accent:       #4fc3f7;
+  --color-error:        #ff6b6b;
+  --color-text:         #e4e8f2;
+  --color-muted:        rgba(228, 232, 242, 0.45);
+  --color-dim:          rgba(228, 232, 242, 0.22);
+
+  --font-serif:   'DM Serif Display', serif;
+  --font-mono:    'DM Mono', monospace;
+  --font-sans:    'DM Sans', sans-serif;
+
+  --radius-sm:    9px;
+  --radius-md:    12px;
+  --radius-lg:    16px;
+
+  --gap:          1rem;
+}
+
+
+/* ── 2. Reset & base ────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+
+/* ── 3. Background atmosphere ───────────────────────────────── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 70% 45% at 12% 18%, rgba(79, 195, 247, 0.08) 0%, transparent 55%),
+    radial-gradient(ellipse 55% 35% at 88% 80%, rgba(105, 240, 174, 0.055) 0%, transparent 55%);
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.012) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.012) 1px, transparent 1px);
+  background-size: 52px 52px;
+}
+
+
+/* ── 4. Layout ──────────────────────────────────────────────── */
+.app {
+  position: relative;
+  z-index: 1;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+}
+
+/* Shared fade-up entrance animation */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.fade {
+  animation: fadeUp 0.45s ease both;
+}
+
+/* Hidden until data loads */
+#data-view {
+  display: none;
+}
+
+
+/* ── 5. Header ──────────────────────────────────────────────── */
+header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.8rem;
+}
+
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+}
+
+.brand__name {
+  font-family: var(--font-serif);
+  font-size: clamp(1.4rem, 4vw, 1.85rem);
+  letter-spacing: -0.025em;
+  line-height: 1;
+}
+
+.brand__sub {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--color-accent);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.header-meta {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--color-muted);
+  text-align: right;
+  line-height: 1.7;
+}
+
+.header-meta__clock {
+  color: var(--color-text);
+  font-size: 0.78rem;
+}
+
+
+/* ── 6. Search ──────────────────────────────────────────────── */
+.search-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.search-row__input {
+  flex: 1;
+  min-width: 0;
+  background: var(--color-panel);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 1rem;
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.18s;
+}
+
+.search-row__input::placeholder {
+  color: var(--color-dim);
+}
+
+.search-row__input:focus {
+  border-color: var(--color-accent);
+}
+
+.btn {
+  padding: 0.65rem 1.1rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.15s, transform 0.1s;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn--primary {
+  background: var(--color-accent);
+  color: #080c18;
+}
+
+.btn--primary:hover {
+  opacity: 0.86;
+}
+
+.btn--ghost {
+  background: var(--color-panel);
+  color: var(--color-muted);
+  border: 1px solid var(--color-border);
+}
+
+.btn--ghost:hover {
+  color: var(--color-text);
+  border-color: var(--color-border-hi);
+}
+
+
+/* ── 7. States: loading & error ─────────────────────────────── */
+.error-banner {
+  display: none;
+  background: rgba(255, 107, 107, 0.07);
+  border: 1px solid rgba(255, 107, 107, 0.18);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.2rem;
+  color: var(--color-error);
+  font-size: 0.875rem;
+  margin-bottom: 1.25rem;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5rem 2rem;
+  gap: 1rem;
+}
+
+.loading__spinner {
+  width: 34px;
+  height: 34px;
+  border: 2px solid var(--color-border);
+  border-top-color: var(--color-accent);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading__text {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
+
+
+/* ── 8. Hero card ───────────────────────────────────────────── */
+.hero {
+  background: var(--color-panel);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 1.6rem 1.8rem;
+  margin-bottom: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Decorative glow in top-right corner */
+.hero::after {
+  content: '';
+  position: absolute;
+  top: -80px;
+  right: -80px;
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(79, 195, 247, 0.1) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+.hero__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.hero__location-tag {
+  font-family: var(--font-mono);
+  font-size: 0.63rem;
+  color: var(--color-accent);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+}
+
+.hero__city {
+  font-family: var(--font-serif);
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+}
+
+.hero__region {
+  font-size: 0.83rem;
+  color: var(--color-muted);
+  margin-top: 0.2rem;
+}
+
+.hero__temp-wrap {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.hero__temp {
+  font-family: var(--font-serif);
+  font-size: clamp(2.8rem, 8vw, 4.2rem);
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.hero__temp sup {
+  font-size: 1.6rem;
+  opacity: 0.45;
+  vertical-align: super;
+}
+
+.hero__condition {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  margin-top: 0.25rem;
+}
+
+.hero__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.4rem 2rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.stat__label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--color-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.stat__value {
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin-top: 0.1rem;
+}
+
+
+/* ── 9. Hourly strip ────────────────────────────────────────── */
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--color-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  margin-bottom: 0.65rem;
+}
+
+.hourly-strip {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.4rem;
+  margin-bottom: 1rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+.hour-card {
+  flex: 0 0 64px;
+  background: var(--color-panel);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 0.3rem;
+  text-align: center;
+}
+
+.hour-card--now {
+  border-color: rgba(79, 195, 247, 0.3);
+}
+
+.hour-card__time {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--color-muted);
+  margin-bottom: 0.28rem;
+}
+
+.hour-card--now .hour-card__time {
+  color: var(--color-accent);
+}
+
+.hour-card__icon {
+  font-size: 0.95rem;
+  margin-bottom: 0.28rem;
+}
+
+.hour-card__temp {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.hour-card__rain {
+  font-size: 0.58rem;
+  color: var(--color-accent);
+  margin-top: 0.12rem;
+  opacity: 0.85;
+}
+
+
+/* ── 10. 7-day forecast ─────────────────────────────────────── */
+.forecast-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.forecast-card {
+  background: var(--color-panel);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 0.5rem;
+  text-align: center;
+  min-width: 0;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.forecast-card:hover {
+  background: var(--color-panel-hover);
+  border-color: var(--color-border-hi);
+}
+
+.forecast-card--today {
+  border-color: rgba(79, 195, 247, 0.3);
+  background: rgba(79, 195, 247, 0.05);
+}
+
+.forecast-card__day {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--color-muted);
+  margin-bottom: 0.4rem;
+}
+
+.forecast-card--today .forecast-card__day {
+  color: var(--color-accent);
+}
+
+.forecast-card__icon {
+  font-size: 1.3rem;
+  margin-bottom: 0.4rem;
+}
+
+.forecast-card__high {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.forecast-card__low {
+  font-size: 0.72rem;
+  color: var(--color-muted);
+  margin-top: 0.06rem;
+}
+
+.forecast-card__rain {
+  font-size: 0.58rem;
+  color: var(--color-accent);
+  margin-top: 0.3rem;
+  opacity: 0.85;
+}
+
+
+/* ── 11. Conditions detail ──────────────────────────────────── */
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.6rem;
+}
+
+.detail-card {
+  background: var(--color-panel);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0.9rem 1.1rem;
+}
+
+.detail-card__icon {
+  font-size: 1rem;
+  margin-bottom: 0.3rem;
+  opacity: 0.65;
+}
+
+.detail-card__label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--color-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.detail-card__value {
+  font-size: 1.15rem;
+  font-weight: 500;
+  margin-top: 0.1rem;
+}
+
+.detail-card__sub {
+  font-size: 0.7rem;
+  color: var(--color-muted);
+  margin-top: 0.06rem;
+}
+
+
+/* ── 12. Footer ─────────────────────────────────────────────── */
+footer {
+  margin-top: 2.5rem;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--color-dim);
+  letter-spacing: 0.06em;
+}
+
+footer a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+
+/* ── 13. Responsive breakpoints ─────────────────────────────── */
+
+/* Tablet */
+@media (max-width: 768px) {
+  .app              { padding: 1.5rem 1rem 3rem; }
+  .hero             { padding: 1.3rem 1.4rem; }
+  .hero__stats      { gap: 1.1rem 1.6rem; }
+  .brand__sub       { display: none; }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .app              { padding: 1.25rem 0.85rem 2.5rem; }
+  header            { margin-bottom: 1.2rem; }
+  .hero__top        { flex-direction: column; }
+  .hero__temp-wrap  { text-align: left; }
+  .hero__stats      { gap: 1rem 1.4rem; }
+  .stat__value      { font-size: 0.88rem; }
+  .btn              { padding: 0.65rem 0.85rem; font-size: 0.8rem; }
+  .detail-grid      { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Narrow screens: forecast becomes horizontally scrollable */
+@media (max-width: 600px) {
+  .forecast-grid {
+    grid-template-columns: repeat(7, minmax(80px, 1fr));
+    overflow-x: auto;
+    padding-bottom: 0.4rem;
+  }
+}
