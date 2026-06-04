@@ -1,4 +1,4 @@
-# Skyglass — Weather Intelligence Dashboard
+# Skyglass - Weather Intelligence Dashboard
 
 Skyglass is a weather dashboard that gives you real-time weather conditions for any city in the world. Open it, and it immediately shows the weather where you are. Search any city and it updates instantly.
 
