@@ -55,7 +55,7 @@ function renderAll(data) {
   const today    = daily[0]      || {};
 
   renderHero(location, current, data._resolvedCity);
-  renderHourly(hourly);
+  renderHourly(hourly, current.time);   // pass API time, not browser clock
   renderForecast(daily);
   renderDetails(today, location.timezone);
   renderTimestamp();

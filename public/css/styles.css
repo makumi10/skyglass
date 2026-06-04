@@ -115,6 +115,33 @@ body::after {
 }
 
 
+/* Weather icons — served from WeatherAI CDN */
+.weather-icon {
+  width: 32px;
+  height: 32px;
+  display: block;
+  object-fit: contain;
+}
+
+.hero__icon .weather-icon {
+  width: 56px;
+  height: 56px;
+  margin-bottom: 0.25rem;
+}
+
+.hour-card__icon .weather-icon {
+  width: 28px;
+  height: 28px;
+  margin: 0 auto;
+}
+
+.forecast-card__icon .weather-icon {
+  width: 32px;
+  height: 32px;
+  margin: 0 auto 0.4rem;
+}
+
+
 /* ── 5. Header ──────────────────────────────────────────────── */
 header {
   display: flex;

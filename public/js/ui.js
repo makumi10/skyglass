@@ -36,31 +36,40 @@ function showData() {
 /* ── Hero card ────────────────────────────────────────────────── */
 
 function renderHero(location, current, resolvedCity) {
-  $('hero-city').textContent    = resolvedCity || location.city || '—';
-  $('hero-region').textContent  = [location.region, location.country].filter(Boolean).join(', ') || location.country || '—';
-  $('hero-temp').innerHTML      = `${Math.round(current.temperature ?? 0)}<sup>°C</sup>`;
+  $('hero-city').textContent      = resolvedCity || location.city || '—';
+  $('hero-region').textContent    = [location.region, location.country].filter(Boolean).join(', ') || location.country || '—';
+  $('hero-temp').innerHTML        = `${Math.round(current.temperature ?? 0)}<sup>°C</sup>`;
   $('hero-condition').textContent = wmoLabel(current.condition_code ?? 0);
+  $('hero-icon').textContent      = wmoIcon(current.condition_code ?? 0);
 
-  $('stat-feels').textContent   = `${Math.round(current.feels_like ?? 0)}°C`;
+  $('stat-feels').textContent    = `${Math.round(current.feels_like ?? 0)}°C`;
   $('stat-humidity').textContent = `${current.humidity ?? '—'}%`;
-  $('stat-wind').textContent    = `${Math.round(current.wind_speed ?? 0)} km/h ${windDirection(current.wind_direction ?? 0)}`;
-  $('stat-gust').textContent    = current.wind_gust != null ? `${Math.round(current.wind_gust)} km/h` : '—';
-  $('stat-uv').textContent      = `${(current.uv_index ?? 0).toFixed(1)} · ${uvLabel(current.uv_index ?? 0)}`;
+  $('stat-wind').textContent     = `${Math.round(current.wind_speed ?? 0)} km/h ${windDirection(current.wind_direction ?? 0)}`;
+  $('stat-gust').textContent     = current.wind_gust != null ? `${Math.round(current.wind_gust)} km/h` : '—';
+  $('stat-uv').textContent       = `${(current.uv_index ?? 0).toFixed(1)} · ${uvLabel(current.uv_index ?? 0)}`;
 }
 
 
 /* ── Hourly strip ─────────────────────────────────────────────── */
 
-function renderHourly(hourlyData) {
-  const nowHour = new Date().getHours();
-  const today   = new Date().toISOString().slice(0, 10);
+/**
+ * @param {Array}  hourlyData  - full hourly array from the API
+ * @param {string} currentTime - API's current time e.g. "2026-06-04T00:25"
+ *                               Used instead of browser clock to avoid
+ *                               timezone mismatch between browser and location.
+ */
+function renderHourly(hourlyData, currentTime) {
+  // Derive the current date and hour directly from the API's reported time,
+  // not from the browser. This ensures the filter is always correct for the
+  // searched location regardless of what timezone the user's device is in.
+  const apiDate = currentTime.slice(0, 10);
+  const apiHour = +currentTime.slice(11, 13);
 
-  // Keep only hours from now onwards, up to 12
   const upcoming = hourlyData
     .filter(h => {
       const hDate = h.time.slice(0, 10);
       const hHour = +h.time.slice(11, 13);
-      return hDate >= today && (hDate > today || hHour >= nowHour);
+      return hDate >= apiDate && (hDate > apiDate || hHour >= apiHour);
     })
     .slice(0, 12);
 
@@ -83,7 +92,7 @@ function renderHourly(hourlyData) {
 
 function renderForecast(dailyData) {
   $('forecast-grid').innerHTML = dailyData.map((day, i) => {
-    // Use noon of each day to avoid timezone-shift issues with weekday labels
+    // Use noon of each date to avoid timezone-shift issues with weekday labels
     const dayName = i === 0
       ? 'Today'
       : new Date(day.date + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short' });
@@ -107,37 +116,31 @@ function renderForecast(dailyData) {
 function renderDetails(today, timezone) {
   const details = [
     {
-      icon:  '🌅',
       label: 'Sunrise',
       value: formatTime(today.sunrise),
       sub:   '',
     },
     {
-      icon:  '🌇',
       label: 'Sunset',
       value: formatTime(today.sunset),
       sub:   '',
     },
     {
-      icon:  '🌧️',
       label: 'Rain Chance',
       value: `${today.precipitation_probability ?? 0}%`,
       sub:   `${today.precipitation_sum ?? 0} mm total`,
     },
     {
-      icon:  '💨',
       label: 'Max Wind',
       value: `${Math.round(today.wind_max ?? 0)} km/h`,
       sub:   '',
     },
     {
-      icon:  '🌡️',
       label: 'High / Low',
       value: `${Math.round(today.temp_max ?? 0)}° / ${Math.round(today.temp_min ?? 0)}°`,
       sub:   'today',
     },
     {
-      icon:  '🌍',
       label: 'Timezone',
       value: timezone || '—',
       sub:   '',
@@ -146,7 +149,6 @@ function renderDetails(today, timezone) {
 
   $('detail-grid').innerHTML = details.map(d => `
     <div class="detail-card">
-      <div class="detail-card__icon">${d.icon}</div>
       <div class="detail-card__label">${d.label}</div>
       <div class="detail-card__value">${d.value}</div>
       ${d.sub ? `<div class="detail-card__sub">${d.sub}</div>` : ''}
