@@ -2,7 +2,7 @@
 
 Skyglass is a weather dashboard that gives you real-time weather conditions for any city in the world. Open it, and it immediately shows the weather where you are. Search any city and it updates instantly.
 
-**Live demo:** [https://spyglass.onrender.com](https://spyglass.onrender.com)
+**Live demo:** [https://skyglass.onrender.com](https://skyglass.onrender.com)
 
 ---
 
