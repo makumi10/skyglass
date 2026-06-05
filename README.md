@@ -79,3 +79,7 @@ skyglass-weather/
 | Frontend | HTML, CSS, vanilla JavaScript |
 | Weather data | [WeatherAI API](https://weather-ai.co) |
 | City search geocoding | [Open-Meteo Geocoding API](https://open-meteo.com) |
+
+
+> Note: the app is hosted on Render's free tier, which spins down after
+> inactivity. The first load may take 3–5 seconds to wake up.
